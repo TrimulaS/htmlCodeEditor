@@ -1,10 +1,12 @@
-function insertCodeEdit(htmlCode, heightPercentage, widthPercentage) {
+// codeEditor.js
+
+function insertCodeEditor(parent, htmlCode) {
     let container = document.createElement('div');
     container.className = 'container';
     container.style.display = 'flex';
-    container.style.height = heightPercentage + 'vh';
-    container.style.width = widthPercentage + 'vw';
-    container.style.border = 'solid 1px grey';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.border = 'solid 1px blue';
 
     let column1 = document.createElement('div');
     column1.className = 'column';
@@ -33,29 +35,32 @@ function insertCodeEdit(htmlCode, heightPercentage, widthPercentage) {
     codeEditField.value = htmlCode;
     column1.appendChild(codeEditField);
 
-    let column2 = document.createElement('div');
-    column2.className = 'column';
-    column2.style.flex = '1';
-    column2.style.height = '100%';
-    column2.style.overflow = 'auto';
+    // let column2 = document.createElement('div');
+    // column2.className = 'column';
+    // column2.style.flex = '1';
+    // column2.style.height = '100%';
+    // column2.style.overflow = 'auto';
 
     let preview = document.createElement('iframe');
     preview.className = 'preview';
 
-    preview.style.border = '1px solid #ccc';
-    preview.style.padding = '10px';
-    preview.style.margin = '10px';
+    // preview.style.border = '1px solid #ccc';
+    // preview.style.padding = '10px';
+    // preview.style.margin = '10px';
 
 
-    // preview.setAttribute('width', '100% - 20px');
-    // preview.setAttribute('height', '100% - 20px');
+    // preview.setAttribute('width',  'calc(100% - 20px)');
+    // preview.setAttribute('height', 'calc(100% - 20px)');
     preview.setAttribute('srcdoc', '<!DOCTYPE html><html><head><title>Preview</title></head><body></body></html>');
-    column2.appendChild(preview);
+
+    //column2.appendChild(preview);
 
     container.appendChild(column1);
-    container.appendChild(column2);
+    // container.appendChild(column2);
+    container.appendChild(preview);
 
-    document.body.appendChild(container);
+    //parent.appendChild(container);
+    parent.appendChild(container);
     bindRunButtonEvent(container);
 
     container.querySelector('.run-btn').click();

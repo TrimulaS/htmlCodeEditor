@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Editor</title>
     <style>
-        body, html {
+        /* body, html {
             height: 100%;
             margin: 0 auto;
             padding: 0 auto;
             font-family: Arial, sans-serif;
-
-            /* display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: aquamarine    ; */
+        } */
+        .codeEditor {
+            display: flex;
+            border: dashed 3px red;
         }
         
   
@@ -22,18 +21,30 @@
     <script src="./HtmlCodeEditor_files/codeEditor.js"></script>
 </head>
 <body>
+    <div style="display: flex; flex-direction: column;   justify-content: center;    align-items: center;">
+        Code1 here:
+        <div id="codeEditor1" class = "codeEditor" style=" width: 480px; height: 320px;"></div>
 
-    <div>
-        <script>insertCodeEdit("<b>bold</b> not bold", 95, 95);</script>
+
+        <hr>
+        Code2 here:
+        <div id="codeEditor2" class = "codeEditor" style=" width: 600px; height: 480px;"></div>
+
+
+        <hr>
+        Code3 here:
+        <div id="codeEditor3" class = "codeEditor" style=" width: 800px; height: 600px;"></div>
+
     </div>
-    <hr>
-    <div>
-        <script>insertCodeEdit("<i>italic</i> not italic", 50, 50);</script>
-    </div>
-    <hr>
-    <div>
-        <script>insertCodeEdit("<u>underlined</u> not underlined", 30, 30);</script>
-    </div>
+    <script>
+        // Get the element by ID after the DOM is loaded
+        window.onload = function() {
+          insertCodeEditor(document.getElementById("codeEditor1"), "<b>bold</b> not bold");
+          insertCodeEditor(document.getElementById("codeEditor2"), "<i>italic</i> not italic");
+          insertCodeEditor(document.getElementById("codeEditor3"), "<u>underlined</u> not underlined");
+
+        };
+      </script>
     
 </body>
 </html>
