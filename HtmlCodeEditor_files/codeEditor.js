@@ -1,28 +1,54 @@
 function insertCodeEdit(htmlCode, heightPercentage, widthPercentage) {
-    var container = document.createElement('div');
+    let container = document.createElement('div');
     container.className = 'container';
+    container.style.display = 'flex';
     container.style.height = heightPercentage + 'vh';
     container.style.width = widthPercentage + 'vw';
+    container.style.border = 'solid 1px grey';
 
-    var column1 = document.createElement('div');
+    let column1 = document.createElement('div');
     column1.className = 'column';
-    var toolbar = document.createElement('div');
+    column1.style.flex = '1';
+    column1.style.height = '100%';
+    column1.style.overflow = 'auto';
+
+
+    let toolbar = document.createElement('div');
     toolbar.className = 'toolbar';
+    
+    toolbar.style.backgroundColor = '#f0f0f0';
+    toolbar.style.padding = '10px';
+
     toolbar.innerHTML = '<button class="run-btn">Run</button>';
     column1.appendChild(toolbar);
 
-    var codeEditField = document.createElement('textarea');
+    let codeEditField = document.createElement('textarea');
+    codeEditField.style.height = 'calc(100% - 40px)';
+    codeEditField.style.width = '100%';
+    codeEditField.style.padding = '10px';
+    codeEditField.style.boxSizing = 'border-box';
+
     codeEditField.className = 'code-edit-field';
     codeEditField.placeholder = 'Write code here';
     codeEditField.value = htmlCode;
     column1.appendChild(codeEditField);
 
-    var column2 = document.createElement('div');
+    let column2 = document.createElement('div');
     column2.className = 'column';
-    var preview = document.createElement('iframe');
+    column2.style.flex = '1';
+    column2.style.height = '100%';
+    column2.style.overflow = 'auto';
+
+    let preview = document.createElement('iframe');
     preview.className = 'preview';
-    preview.setAttribute('width', '100%');
-    preview.setAttribute('height', '100%');
+
+    preview.style.border = '1px solid #ccc';
+    preview.style.padding = '10px';
+    preview.style.margin = '10px';
+
+
+    // preview.setAttribute('width', '100% - 20px');
+    // preview.setAttribute('height', '100% - 20px');
     preview.setAttribute('srcdoc', '<!DOCTYPE html><html><head><title>Preview</title></head><body></body></html>');
     column2.appendChild(preview);
 
@@ -31,18 +57,20 @@ function insertCodeEdit(htmlCode, heightPercentage, widthPercentage) {
 
     document.body.appendChild(container);
     bindRunButtonEvent(container);
+
+    container.querySelector('.run-btn').click();
 }
 
 function bindRunButtonEvent(container) {
-    var runBtn = container.querySelector('.run-btn');
-    var codeEditField = container.querySelector('.code-edit-field');
-    var preview = container.querySelector('.preview');
+    let runBtn = container.querySelector('.run-btn');
+    let codeEditField = container.querySelector('.code-edit-field');
+    let preview = container.querySelector('.preview');
     
     runBtn.addEventListener('click', function() {
-        var code = codeEditField.value;
-        var prefix = "<html><head></head><body>";
-        var postfix = "</body></html>";
-        var previewDocument = preview.contentDocument || preview.contentWindow.document;
+        let code = codeEditField.value;
+        let prefix = "<html><head></head><body>";
+        let postfix = "</body></html>";
+        let previewDocument = preview.contentDocument || preview.contentWindow.document;
         previewDocument.open();
         previewDocument.write(prefix + code + postfix);
         previewDocument.close();
