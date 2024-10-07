@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor</title>
+    <style>
+        /* body, html {
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 auto;
+            font-family: Arial, sans-serif;
+        } */
+
+        .area{
+            flex-grow:1;
+        }
+        
+  
+    </style>
+    <!-- <script src="./flex2_files/codeEditor.js"></script> -->
+    <script  src="./flex2_files/codeEditor.js"></script>
+</head>
+<body>
+    <div style="display: flex; flex-direction: column;   justify-content: center;    align-items: center;">
+        <div id="codeEditor1" class = "codeEditor" style=" width: 400px; height: 400px;"></div>
+
+    </div>
+    <script>
+        // Get the element by ID after the DOM is loaded
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            insertCodeEditor(document.getElementById("codeEditor1"), "<b>bold</b> not bold");
+        });
+       
+      </script>
+    
+</body>
+</html>
