@@ -11,9 +11,66 @@
             padding: 0 auto;
             font-family: Arial, sans-serif;
         } */
+        .codeEditor{
+            position: relative;
+            border: solid 1px black;
+            flex-direction : 'row';
+        }
 
         .area{
+            display: flex;
             flex-grow:1;
+            flex-direction: column; /* Расположим toolbar сверху, а editor ниже */
+        }
+        .splitter{
+            background-color : #f0f0f0;
+            /* flex-grow: 1;
+            flex-shrink: 1;
+            width: 10px; */
+        }
+        .toolbar{
+            background-color : #f0f0f0;
+            flex-grow: 0;
+            flex-shrink: 1; /* toolbar занимает фиксированную высоту */
+            display: flex;
+            flex-direction: row; /* Расположим toolbar сверху, а editor ниже */
+        }
+
+        .continaer {
+            flex-grow: 1;
+            flex-shrink: 1; /* toolbar занимает фиксированную высоту */
+
+        }
+        .code-editor-container{
+
+            background-color: beige;
+            font-family: monospace;
+        }
+        .code-editor{
+
+            width: 100%; /* Занимает всю ширину родителя */
+            /* flex-grow: 1; */
+            overflow: auto; /* Горизонтальная прокрутка при необходимости */
+            white-space: pre-wrap; /* Сохраняем перенос строк и пробелы */
+            word-wrap: break-word; /* Перенос длинных слов на новую строку */
+            box-sizing: border-box; /* Учитываем отступы и границы */
+            flex-wrap:wrap; 
+ 
+
+        }
+        /* Resize button */
+        .corner {
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            border-style: solid ;
+            position: absolute;
+        }
+        .bottom-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            cursor: se-resize;
         }
         
   
@@ -23,7 +80,7 @@
 </head>
 <body>
     <div style="display: flex; flex-direction: column;   justify-content: center;    align-items: center;">
-        <div id="codeEditor1" class = "codeEditor" style=" width: 400px; height: 400px;"></div>
+        <div id="codeEditor1" class = "codeEditor" style=" width: 400px; height: 300px;"></div>
 
     </div>
     <script>

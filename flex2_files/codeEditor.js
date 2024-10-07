@@ -1,29 +1,32 @@
 // codeEditor.js
-
-
 //document.addEventListener('DOMContentLoaded', () => {
-    const splitterSize = 10;    //10 pixels width or height of splitters
-    let direction = 'horizontal';
-    
-    function insertCodeEditor(parent, htmlCode) {
+const splitterSize = 10;    //10 pixels width or height of splitters
+const minimum_size = 20;                    //Minimal size to stop resize
+let isDragging = false;
+let splitter = null;
+// let direction = 'horizontal';
 
-    parent.style.display = flex;
+
+
+
+function insertCodeEditor(parent, htmlCode) {
+
+    parent.style.display = 'flex';
+    parent.style.flexDirection = 'row';
+    
 
     const areaLeft = document.createElement('div');
-    areaLeft.flexGrow = 1;
 	areaLeft.classList = 'area'
 
-
     const areaRight = document.createElement('div');
-    areaRight.flexGrow = 1;
 	areaRight.classList = 'area'
     const toolbar = document.createElement('div');
-    toolbar.classList = 'area'
+    toolbar.classList = 'area toolbar'
 	
 
-    // Добавляем кнопку и радиокнопки в toolbar
+    //---------------------RadioButtons to switch horizonta / verlical
     toolbar.innerHTML = `
-        <button class="run-btn">Run</button>
+        <button id="button-run-code">Run</button>
         <label>
             <input type="radio" name="layout" value="horizontal" checked> Horizontal
         </label>
@@ -34,33 +37,116 @@
 
 
 
-
+    const codeEditorContainer = document.createElement('div');
+    codeEditorContainer.classList = 'container code-editor-container';
 
     const codeEditor = document.createElement('div');
-	codeEditor.classList = 'area'
+	codeEditor.classList = 'code-editor'
     codeEditor.contentEditable = "true"; // Правильное использование свойства
-
     codeEditor.textContent = '<b>bold</b> not bold'
 
-	areaLeft.append(toolbar, codeEditor);
+    codeEditorContainer.appendChild(codeEditor);
+	areaLeft.append(toolbar, codeEditorContainer);
+
+
 
 
     // area2 
+    const codeViewerContainer = document.createElement('div');
+    codeViewerContainer.classList = 'container code-viewer-container';
+
 	const codeViewer = document.createElement('div');
 	codeViewer.classList = 'area'
     codeViewer.className = 'preview';
 
     codeViewer.innerHTML = htmlCode;
-	
-    areaRight.append(codeViewer);
+	codeViewerContainer.appendChild(codeViewer);
 
-    insertSplitter(parent, areaLeft,areaRight, direction);    
-       
+    areaRight.append(codeViewerContainer);
+
+    splitter = insertSplitter(parent, areaLeft, areaRight);    
+    divResizeHV(parent)
+
     
+    // After DOM updated, assign listeners:
+
+    //RadioButtons to switch horizonta / verlical
+    // Находим радиокнопки
+    const radioButtons = document.querySelectorAll('input[name="layout"]');
+
+    // Функция для изменения расположения
+    function reassign(layout) {
+        console.log(`Layout changed to: ${layout}`);
+        // Здесь будет ваша логика изменения, например:
+        parent.style.flexDirection = layout === 'horizontal' ? 'row' : 'column';
+        setSplitterDirection(splitter);
     }
+
+    // Добавляем обработчики событий для каждого радиобатона
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', (event) => {
+            if (event.target.checked) {
+                reassign(event.target.value);
+            }
+        });
+    });
+
+    document.getElementById('button-run-code').addEventListener('click', function() {
+        codeViewer.innerHTML = codeEditor.textContent
+    });
+
+    // //Arrange when resize to adjust containers
+    // const resizeObserver = new ResizeObserver(() => {
+    //     onResize();
+    // });
     
-//--------------------------------------Splitter
-function insertSplitter(parent, areaLeft, areaRight, direction){
+    // resizeObserver.observe(parent);
+    
+    // function onResize(){
+
+
+    //     // Рассчитываем ширину и высоту элементов через getBoundingClientRect()
+    //     const areaLeftRect = areaLeft.getBoundingClientRect();
+    //     const toolbarRect = toolbar.getBoundingClientRect();
+    //     const areaRightRect = areaRight.getBoundingClientRect();
+    //     if(parent.style.flexDirection === 'row'){
+            
+    //         // Устанавливаем flex-параметры для left и right
+    //         const widthMidle = 50% - splitterSize / 2 + 'px';
+    //         areaLeft.style.flex = `0 0 ${widthMidle}`;
+            
+    //         areaRight.style.flex = `0 0 ${widthMidle}`;
+        
+    //         // Рассчитываем размеры для контейнеров
+    //         const codeEditorContainerHeight = areaLeftRect.height - toolbarRect.height;
+    //         const codeEditorContainerWidth = areaLeftRect.width;
+        
+    //         const codeViewerContainerHeight = areaRightRect.height;
+    //         const codeViewerContainerWidth = areaRightRect.width;
+        
+    //         // Устанавливаем размеры
+    //         codeEditorContainer.style.height = `${codeEditorContainerHeight}px`;
+    //         codeEditorContainer.style.width = `${codeEditorContainerWidth}px`;
+        
+    //         codeViewerContainer.style.height = `${codeViewerContainerHeight}px`;
+    //         codeViewerContainer.style.width = `${codeViewerContainerWidth}px`;
+    //     }
+    //     else if(parent.style.flexDirection === 'column'){
+
+    //     }
+    
+
+
+    // }
+    
+}
+
+
+
+
+
+//-------------------------------------------------------------------------------- Splitter
+function insertSplitter(parent, areaLeft, areaRight){
     
  const rect = parent.getBoundingClientRect();
     
@@ -70,104 +156,113 @@ function insertSplitter(parent, areaLeft, areaRight, direction){
 
     //const area1 = document.createElement('div');
     areaLeft.classList.add('area');
-    areaLeft.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
-    areaLeft.style.flexGrow = 1;
+    // areaLeft.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
+    areaLeft.style.flex = `0 0 calc(50% - ${splitterSize/2}px)`;
     
     //const area2 = document.createElement('div');
     areaRight.classList.add('area');
-    areaRight.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
-    areaRight.style.flexGrow = 1;
+    // areaRight.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
+    areaRight.style.flex = `0 0 calc(50% - ${splitterSize/2}px)`;
 
     const splitter = document.createElement('div');
     splitter.classList.add('splitter');
-    
- 
-    splitter.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
+	splitter.style.flexGrow = 0;
+	splitter.style.flexShrink = 0;
+    // splitter.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
 
     
-    if (direction === 'horizontal') {
-        parent.style.flexDirection = 'row'
+
+    parent.append(areaLeft, splitter, areaRight);
+	    setSplitterDirection(splitter);
+    makeResizableDiv(splitter);
+
+
+	return splitter;
+}
+
+function setSplitterDirection(splitter){
+	if(!splitter)return;
+    const parent = splitter.parentElement;
+    if (parent.style.flexDirection === 'row') {
+        //parent.style.flexDirection = 'row'
         splitter.classList = 'splitter' + ' ' + 'horizontal-splitter'
         splitter.style.width = splitterSize + 'px';
+        splitter.style.height = '100%';
         splitter.style.cursor = 'ew-resize'
         
-    } else {
+    } else if (parent.style.flexDirection === 'column') {
 
-        parent.style.flexDirection = 'column'
+        //parent.style.flexDirection = 'column'
         splitter.classList = 'splitter' + ' ' + 'vertical-splitter'
+        splitter.style.width = '100%'; 
         splitter.style.height = splitterSize + 'px';
         splitter.style.cursor = 'ns-resize'
 
     }
-    parent.append(areaLeft, splitter, areaRight);
-    makeResizableDiv(splitter);
-         
-
-}
-
+    else{
+        console.log(`(!) Wrong direction type: ${parent.style.flexDirection}`);
+    }
+ }
 
 
-    function makeResizableDiv(splitter) {
+
+function makeResizableDiv(splitter) {
     const element = splitter.previousElementSibling; //document.querySelector(div);
     const element2 = splitter.nextElementSibling;
 
-    const minimum_size = 20;                    //Minimal size to stop resize
+    const parent = splitter.parentElement;
+
+
 
     splitter.addEventListener('mousedown', function(e) {
     e.preventDefault()
-    original_width = parseFloat(getComputedStyle(element, null).getPropertyValue('width').replace('px', ''));
-    original_height = parseFloat(getComputedStyle(element, null).getPropertyValue('height').replace('px', ''));
-    original_x = element.getBoundingClientRect().left;
-    original_y = element.getBoundingClientRect().top;
-    original_width2 = parseFloat(getComputedStyle(element2, null).getPropertyValue('width').replace('px', ''));
-    original_height2 = parseFloat(getComputedStyle(element2, null).getPropertyValue('height').replace('px', ''));
-    original_x2 = element2.getBoundingClientRect().left;
-    original_y2 = element2.getBoundingClientRect().top;
+    isDragging = true;
 
-    original_widthS = parseFloat(getComputedStyle(splitter, null).getPropertyValue('width').replace('px', ''));
-    original_heightS = parseFloat(getComputedStyle(splitter, null).getPropertyValue('height').replace('px', ''));
-    original_xS = splitter.getBoundingClientRect().left;
-    original_yS = splitter.getBoundingClientRect().top;
-
-    original_mouse_x = e.pageX;
-    original_mouse_y = e.pageY;
-    window.addEventListener('mousemove', resize)
-    window.addEventListener('mouseup', stopResize)
+    // original_mouse_x = e.pageX;
+    // original_mouse_y = e.pageY;
+    window.addEventListener('mousemove', onDrag)
+    window.addEventListener('mouseup', stopDrag)
     })
     
 
     //'horizontal-splitter' : 'vertical-splitter');
-    function resize(e) {
-        const parent = splitter.parentElement;
-        if (splitter.classList.contains('horizontal-splitter')) {   
-            const deltaX = e.pageX - original_mouse_x;                  //bottom-right
-            const width = original_width + deltaX;
-            const width2 = original_width2 - deltaX;
+    function onDrag(e) {
+        if (!isDragging) return;
+        const parentRect = splitter.parentNode.getBoundingClientRect();
+        const areaPrevious = splitter.previousElementSibling;
+        const areaNext = splitter.nextElementSibling;
 
-            const rect = parent.getBoundingClientRect();
-            const localX = event.clientX - rect.left; // Координаты мыши по X в пределах div
-            const localY = event.clientY - rect.top;  // Координаты мыши по Y в пределах div
-            console.log('Локальные координаты мыши:', localX, localY, '           Координаты div:', rect.left, rect.top);
+        if (parent.style.flexDirection === 'row') {   
+            const newLeft = e.clientX - parentRect.left;
+            const parentWidth = parentRect.width;
 
+            // If new postion is not exceed minimal area size requiremnt
+            if(newLeft > minimum_size && newLeft < parentWidth - minimum_size){
+                // Устанавливаем ширину первого блока
+                const leftFlex = (newLeft / parentWidth) * 100;
+                areaPrevious.style.flex = `0 0 ${leftFlex}%`;
+                // console.log(`newLeft: ${newLeft}   leftFlex ${leftFlex}`)
 
-            if (width > minimum_size && width2 > minimum_size) {
-            element.style.width = width + 'px'
-            element2.style.width = width2 + 'px'
-            element2.style.left = original_x2 + (e.pageX - original_mouse_x) + 'px'
-            splitter.style.left = original_xS + (e.pageX - original_mouse_x) + 'px'
-            console.log
+                // Устанавливаем ширину второго блока
+
+                //const rightFlex = 100 - leftFlex;
+                //areaNext.style.flex = `0 0 ${rightFlex}%`;
+                
             }
+
     
         }
-        else if (splitter.classList.contains('vertical-splitter')) {
-            const height = original_height + (e.pageY - original_mouse_y)
-            const height2 = original_height2 - (e.pageY - original_mouse_y)
-    
-            if (height > minimum_size && height2 > minimum_size) {
-            element.style.height = height + 'px'
-            element2.style.height = height2 + 'px'
-            element2.style.top = original_y2 + (e.pageY - original_mouse_y) + 'px'
-            splitter.style.top = original_yS + (e.pageY - original_mouse_y) + 'px'
+        else if (parent.style.flexDirection === 'column') {
+            const newTop = e.clientY - parentRect.top;
+            const parentHeight = parentRect.height;
+
+            // If new postion is not exceed minimal area size requiremnt
+            if(newTop > minimum_size && newTop < parentHeight - minimum_size){
+                // Устанавливаем ширину первого блока
+                const topFlex = (newTop / parentHeight) * 100;
+                areaPrevious.style.flex = `0 0 ${topFlex}%`;
+
+
             }
         }
     
@@ -175,13 +270,54 @@ function insertSplitter(parent, areaLeft, areaRight, direction){
 
 
     }
-    function stopResize() {
-        window.removeEventListener('mousemove', resize)
-        window.removeEventListener('mouseup', stopResize)
+    function stopDrag() {
+        isDragging = false;
+        // areaNext.style.flex = 'auto';
+        //splitter.style.left = areaPrevious.width
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', stopDrag);
     }
     
 }
+function fixFlexSize(component){
 
-    
-//});
+}
+//---------------------------------------------------------------------Resizer for whole Container
+// Adds resize control to bootom right
+function divResizeHV(component){
+    // add resize control at bottom right
+    const bottomRight = document.createElement('div');
+    bottomRight.classList.add('corner', 'bottom-right');
+    component.appendChild(bottomRight);
 
+    bottomRight.addEventListener('mousedown', startResizing);
+
+    function startResizing(e) {
+        const component = e.target.parentElement;
+        let startWidth = component.offsetWidth;
+        let startHeight = component.offsetHeight;
+        let startX = e.clientX;
+        let startY = e.clientY;
+
+
+        function onMouseMove(event) {
+
+
+            let newWidth = startWidth/2 + (event.clientX - startX); // ( startWidth +event.clientX - startX );  //startWidth/2 + (event.clientX - startX);  // Here / 2 due to auto center positioning
+            let newHeight = startHeight + (event.clientY - startY);
+
+            if(newWidth >  160) component.style.width =`${newWidth * 2 }px`; //`${newWidth }px`;    //`${newWidth * 2 }px`;           // Here * 2 due to auto center positioning 
+            if(newHeight > 100) component.style.height = `${newHeight}px`;
+
+            
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+
+        document.addEventListener('mouseup', function mouseUpHandler() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', mouseUpHandler);
+        });
+    }
+
+}
