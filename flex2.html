@@ -15,12 +15,16 @@
             position: relative;
             border: solid 1px black;
             flex-direction : 'row';
+            min-width: 0; /* Предотвращает переполнение по ширине */
+            min-height: 0; /* Предотвращает переполнение по высоте */
         }
 
         .area{
             display: flex;
             flex-grow:1;
             flex-direction: column; /* Расположим toolbar сверху, а editor ниже */
+            min-width: 0; /* Предотвращает переполнение по ширине */
+            min-height: 0; /* Предотвращает переполнение по высоте */
         }
         .splitter{
             background-color : #f0f0f0;
@@ -30,34 +34,53 @@
         }
         .toolbar{
             background-color : #f0f0f0;
+            display: flex;
+            flex-grow: 0;
+            flex-shrink: 0; /* toolbar занимает фиксированную высоту */
+            /* dfisplay: flex; */
+            flex-direction: row; /* Расположим toolbar сверху, а editor ниже */
+            flex-wrap: wrap;
+        }
+        .button{
+            flex-grow: 0;
+            flex-shrink: 1;
+            display: inline;
+
+        }
+
+        .container {
+            /* position: relative; */
+            width: 100%; /* Занимает всю ширину родителя */
+            height: 100%; /* Занимает всю высоту родителя */
             flex-grow: 0;
             flex-shrink: 1; /* toolbar занимает фиксированную высоту */
-            display: flex;
-            flex-direction: row; /* Расположим toolbar сверху, а editor ниже */
-        }
-
-        .continaer {
-            flex-grow: 1;
-            flex-shrink: 1; /* toolbar занимает фиксированную высоту */
-
+            overflow: auto;            
+            background-color: beige;
         }
         .code-editor-container{
-
-            background-color: beige;
+            
+            /* background-color: beige; */
             font-family: monospace;
         }
         .code-editor{
-
-            width: 100%; /* Занимает всю ширину родителя */
-            /* flex-grow: 1; */
-            overflow: auto; /* Горизонтальная прокрутка при необходимости */
-            white-space: pre-wrap; /* Сохраняем перенос строк и пробелы */
-            word-wrap: break-word; /* Перенос длинных слов на новую строку */
-            box-sizing: border-box; /* Учитываем отступы и границы */
-            flex-wrap:wrap; 
+            /* width: 100%; 
+            height: 100%;  */
+            /* overflow: auto; */
+            white-space: pre-wrap; /* Сохраняем пробелы и перенос строк */
+            word-wrap: break-word; /* Перенос длинных слов */
+            word-break: break-all; /* Перенос длинных строк на новую строку */
+            box-sizing: border-box; /* Включаем отступы и границы в размеры */
  
-
         }
+        .code-viewer-container{
+
+            overflow: auto; /* Автоматическая прокрутка при переполнении */
+            /* background-color: rgb(200, 130, 37); */
+        }
+        /* .code-viewer{
+            background-color: rgb(50, 198, 112);
+        } */
+
         /* Resize button */
         .corner {
             width: 10px;
@@ -72,7 +95,27 @@
             right: 0;
             cursor: se-resize;
         }
-        
+        /* for demonstration sample*/
+        .parent{
+            border: dotted 1px black;
+        }
+        .block{
+            background-color: rgb(128,128,255);
+            border: solid 1px rgb(0, 0, 62);
+        }
+        .inline{
+            background-color: rgb(180,180,255);
+            border-radius: 5px;
+            border:  solid 2px blue;
+        }
+        .inline-block{
+            background-color: rgb(248, 73, 175);
+            border: solid 1px red;
+
+        }
+        .no-style{
+            border: solid 1px black;
+        }
   
     </style>
     <!-- <script src="./flex2_files/codeEditor.js"></script> -->
@@ -86,12 +129,107 @@
     <script>
         // Get the element by ID after the DOM is loaded
 
+
+        // Test code
+        const htmlCode=`
+        <div class="parent" style="display: flex; flex-direction: row; flex-wrap:wrap; overflow: auto;">
+        Text or other content. The parent element is flex, dispaly selected as flex.
+        and fleax wrap set.
+        <div class="inline" style="display: inline;">
+            here is inline
+        </div>
+        continue text
+        <div class="inline" style="display: inline;">
+            next is inline
+            <div class="no-style">1</div>
+            <div class="no-style">2</div>
+            <div class="no-style">3</div>
+        </div>
+        end of sentence.
+        <div class="block" style="display: block;">
+            It is block.
+        </div>
+        And very long word_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+
+        Next sentence after &lt;div&gt; block.
+        <div class="no-style">1</div>
+        <div class="no-style">2</div>
+        <div class="no-style">3</div>
+        Note: It is recommended to use the flex shorthand instead of separate flex-grow, flex-shrink, and flex-basis declarations. We have separated them here as this document is about one of the shorthand components: the flex-basis property.
+        <div class="block" style="display: block;">
+            <div class="no-style">0</div>
+            It is block.
+            <div class="no-style">1</div>
+            <div class="no-style">2</div>
+            <div class="no-style">3</div>
+        </div>
+        Position types: static; position: relative; position: absolute; position: fixed; position: sticky;
+        <div class="no-style" style="align-self: start;">align-self: start;</div>
+        <div class="no-style" style="align-self: stretch;">align-self: stretch;</div>
+        <div class="no-style" style="align-self: end;">align-self: end;</div>
+
+    </div>
+    sss<br>
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+        
+        `;
+
+        
+        
+        
+        
         document.addEventListener('DOMContentLoaded', () => {
 
-            insertCodeEditor(document.getElementById("codeEditor1"), "<b>bold</b> not bold");
+            insertCodeEditor(document.getElementById("codeEditor1"), htmlCode);     //"<b>bold</b> not bold"
         });
        
       </script>
+
+
     
 </body>
 </html>

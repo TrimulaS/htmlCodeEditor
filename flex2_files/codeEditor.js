@@ -14,11 +14,13 @@ function insertCodeEditor(parent, htmlCode) {
     parent.style.display = 'flex';
     parent.style.flexDirection = 'row';
     
-
+    // AreaLeft
     const areaLeft = document.createElement('div');
+    areaLeft.id = areaLeft;
 	areaLeft.classList = 'area'
 
     const areaRight = document.createElement('div');
+    areaRight.id = 'areaRight';
 	areaRight.classList = 'area'
     const toolbar = document.createElement('div');
     toolbar.classList = 'area toolbar'
@@ -26,7 +28,8 @@ function insertCodeEditor(parent, htmlCode) {
 
     //---------------------RadioButtons to switch horizonta / verlical
     toolbar.innerHTML = `
-        <button id="button-run-code">Run</button>
+        <button id="button-run-code" class="button">Run</button>
+        <button id="button-clear-code" class="button">Clear</button>
         <label>
             <input type="radio" name="layout" value="horizontal" checked> Horizontal
         </label>
@@ -43,7 +46,7 @@ function insertCodeEditor(parent, htmlCode) {
     const codeEditor = document.createElement('div');
 	codeEditor.classList = 'code-editor'
     codeEditor.contentEditable = "true"; // Правильное использование свойства
-    codeEditor.textContent = '<b>bold</b> not bold'
+    codeEditor.textContent = htmlCode;
 
     codeEditorContainer.appendChild(codeEditor);
 	areaLeft.append(toolbar, codeEditorContainer);
@@ -51,13 +54,13 @@ function insertCodeEditor(parent, htmlCode) {
 
 
 
-    // area2 
+    // Area Right
     const codeViewerContainer = document.createElement('div');
     codeViewerContainer.classList = 'container code-viewer-container';
 
 	const codeViewer = document.createElement('div');
-	codeViewer.classList = 'area'
-    codeViewer.className = 'preview';
+	codeViewer.classList = 'code-viewer'
+
 
     codeViewer.innerHTML = htmlCode;
 	codeViewerContainer.appendChild(codeViewer);
@@ -93,6 +96,9 @@ function insertCodeEditor(parent, htmlCode) {
 
     document.getElementById('button-run-code').addEventListener('click', function() {
         codeViewer.innerHTML = codeEditor.textContent
+    });
+    document.getElementById('button-clear-code').addEventListener('click', function() {
+        codeEditor.textContent="";
     });
 
     // //Arrange when resize to adjust containers
@@ -238,16 +244,13 @@ function makeResizableDiv(splitter) {
 
             // If new postion is not exceed minimal area size requiremnt
             if(newLeft > minimum_size && newLeft < parentWidth - minimum_size){
+                // areaNext.style.flexGrow = 1;
+                areaNext.style.flex = `1 1 auto`;
+                // console.log(`id: ${areaNext.id}   areaNext.flexGrow  ${areaNext.flexGrow }`)
                 // Устанавливаем ширину первого блока
                 const leftFlex = (newLeft / parentWidth) * 100;
                 areaPrevious.style.flex = `0 0 ${leftFlex}%`;
-                // console.log(`newLeft: ${newLeft}   leftFlex ${leftFlex}`)
-
-                // Устанавливаем ширину второго блока
-
-                //const rightFlex = 100 - leftFlex;
-                //areaNext.style.flex = `0 0 ${rightFlex}%`;
-                
+               
             }
 
     
@@ -258,6 +261,7 @@ function makeResizableDiv(splitter) {
 
             // If new postion is not exceed minimal area size requiremnt
             if(newTop > minimum_size && newTop < parentHeight - minimum_size){
+                areaNext.style.flex = `1 1 auto`;
                 // Устанавливаем ширину первого блока
                 const topFlex = (newTop / parentHeight) * 100;
                 areaPrevious.style.flex = `0 0 ${topFlex}%`;
