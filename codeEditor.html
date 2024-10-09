@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor</title>
+    <style>
+        /* body, html {
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 auto;
+            font-family: Arial, sans-serif;
+        } */
+        
+  
+    </style>
+    <!-- <script src="./flex2_files/codeEditor.js"></script> -->
+    <script  src="js/codeEditor.js"></script>
+</head>
+<body>
+    <div style="display: flex; flex-direction: column;   justify-content: center;    align-items: center;">
+        <div id="codeEditor1" class = "codeEditor" style=" width: 400px; height: 300px;"></div>
+
+    </div>
+    <script>
+        // Get the element by ID after the DOM is loaded
+
+
+        // Test code
+        const htmlCode=`
+        <div class="parent" style="display: flex; flex-direction: row; flex-wrap:wrap; overflow: auto;">
+        Text or other content. The parent element is flex, dispaly selected as flex.
+        and fleax wrap set.
+        <div class="inline" style="display: inline;">
+            here is inline
+        </div>
+        continue text
+        <div class="inline" style="display: inline;">
+            next is inline
+            <div class="no-style">1</div>
+            <div class="no-style">2</div>
+            <div class="no-style">3</div>
+        </div>
+        end of sentence.
+        <div class="block" style="display: block;">
+            It is block.
+        </div>
+        And very long word_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+
+        Next sentence after &lt;div&gt; block.
+        <div class="no-style">1</div>
+        <div class="no-style">2</div>
+        <div class="no-style">3</div>
+        Note: It is recommended to use the flex shorthand instead of separate flex-grow, flex-shrink, and flex-basis declarations. We have separated them here as this document is about one of the shorthand components: the flex-basis property.
+        <div class="block" style="display: block;">
+            <div class="no-style">0</div>
+            It is block.
+            <div class="no-style">1</div>
+            <div class="no-style">2</div>
+            <div class="no-style">3</div>
+        </div>
+        Position types: static; position: relative; position: absolute; position: fixed; position: sticky;
+        <div class="no-style" style="align-self: start;">align-self: start;</div>
+        <div class="no-style" style="align-self: stretch;">align-self: stretch;</div>
+        <div class="no-style" style="align-self: end;">align-self: end;</div>
+
+    </div>
+    sss<br>
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+
+sss<br>sss<br>
+        
+        
+sss<br>
+sss<br>
+sss<br>sss<br>
+        
+        
+sss<br>
+        
+        `;
+
+        
+        
+        
+        
+        document.addEventListener('DOMContentLoaded', () => {
+
+            insertCodeEditor(document.getElementById("codeEditor1"), htmlCode);     //"<b>bold</b> not bold"
+        });
+       
+      </script>
+
+
+    
+</body>
+</html>

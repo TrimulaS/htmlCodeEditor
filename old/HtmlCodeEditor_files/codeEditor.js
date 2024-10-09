@@ -15,51 +15,43 @@ function insertCodeEditor(parent, htmlCode) {
     column1.style.overflow = 'auto';
 
 
+
     let toolbar = document.createElement('div');
-    toolbar.className = 'toolbar';
     
     toolbar.style.backgroundColor = '#f0f0f0';
     toolbar.style.padding = '10px';
 
     toolbar.innerHTML = '<button class="run-btn">Run</button>';
+
     column1.appendChild(toolbar);
 
     let codeEditField = document.createElement('textarea');
-    codeEditField.style.height = 'calc(100% - 40px)';
     codeEditField.style.width = '100%';
+    codeEditField.style.height = `calc(100% - ${toolbar.clientHeight}px)`;
     codeEditField.style.padding = '10px';
     codeEditField.style.boxSizing = 'border-box';
+
+    codeEditField.style.resize = 'none';
 
     codeEditField.className = 'code-edit-field';
     codeEditField.placeholder = 'Write code here';
     codeEditField.value = htmlCode;
     column1.appendChild(codeEditField);
 
-    // let column2 = document.createElement('div');
-    // column2.className = 'column';
-    // column2.style.flex = '1';
-    // column2.style.height = '100%';
-    // column2.style.overflow = 'auto';
 
     let preview = document.createElement('iframe');
     preview.className = 'preview';
-
-    // preview.style.border = '1px solid #ccc';
-    // preview.style.padding = '10px';
-    // preview.style.margin = '10px';
+    preview.style.flex = '1';
 
 
-    // preview.setAttribute('width',  'calc(100% - 20px)');
-    // preview.setAttribute('height', 'calc(100% - 20px)');
     preview.setAttribute('srcdoc', '<!DOCTYPE html><html><head><title>Preview</title></head><body></body></html>');
 
-    //column2.appendChild(preview);
 
     container.appendChild(column1);
-    // container.appendChild(column2);
+
     container.appendChild(preview);
 
-    //parent.appendChild(container);
+
     parent.appendChild(container);
     bindRunButtonEvent(container);
 
