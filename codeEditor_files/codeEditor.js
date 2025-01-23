@@ -128,6 +128,10 @@ class CodeEditor {
         this.minimumSize = 20;
         this.splitterSize = 8;
         this.splitterRatio = splitterRatio; // Новый параметр для задания положения сплиттера
+
+        // Minimal element size to limit resize
+        this.minimumWidth = 160         
+        this.minimumHeihgt = 100
     
         this.init();
     }
@@ -144,8 +148,10 @@ class CodeEditor {
 
         const toolbar = document.createElement('div');
         toolbar.classList = 'area-ce toolbar-ce';
+
         toolbar.innerHTML = `
             <button id="button-run-code" class="button-ce">Run</button>
+            <button id="button-copy-code" class="button-ce">Copy</button> 
             <button id="button-clear-code" class="button-ce">Clear</button>
             <label>
                 <input type="radio" name="layout-${this.parent.id}" value="horizontal" checked> Horizontal
@@ -165,6 +171,16 @@ class CodeEditor {
 
         codeEditorContainer.appendChild(this.codeInput);
         this.areaLeft.append(toolbar, codeEditorContainer);
+
+        // Copy button 
+        toolbar.querySelector('#button-copy-code').addEventListener('click', () => {
+            const code = this.codeInput.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                console.log('Code copied to clipboard!');
+            }).catch((err) => {
+                console.error('Failed to copy code:', err);
+            });
+        });
 
         // Создание правой области
         this.areaRight = document.createElement('div');
@@ -212,17 +228,16 @@ class CodeEditor {
     }
 
 
+
     insertSplitter(parent, areaLeft, areaRight) {
-        parent.innerHTML = '';
-        parent.style.display = 'flex';
+        const existingSplitter = parent.querySelector('.splitter-ce');
     
-        // Установка начальных размеров областей в зависимости от splitterRatio
-        const leftFlexPercent = this.splitterRatio * 100;
-        const rightFlexPercent = (1 - this.splitterRatio) * 100;
+        if (existingSplitter) {
+            this.setSplitterDirection(existingSplitter);
+            return existingSplitter; // Если разделитель уже существует, обновляем и возвращаем
+        }
     
-        areaLeft.style.flex = `0 0 calc(${leftFlexPercent}% - ${this.splitterSize / 2}px)`;
-        areaRight.style.flex = `0 0 calc(${rightFlexPercent}% - ${this.splitterSize / 2}px)`;
-    
+        // Если разделителя нет, создаём новый
         const splitter = document.createElement('div');
         splitter.classList.add('splitter-ce');
         splitter.style.flexGrow = 0;
@@ -234,6 +249,7 @@ class CodeEditor {
     
         return splitter;
     }
+    
 
     setSplitterPosition(ratio) {
         if (ratio <= 0 || ratio >= 1) {
@@ -330,10 +346,10 @@ class CodeEditor {
                 //const newWidth = startWidth + (event.clientX - startX); // Ширина изменяется относительно начальной позиции
                 const newWidth = startWidth/2 + (event.clientX - startX);          // no horizontal central positioning:  ( startWidth +event.clientX - startX );  //startWidth/2 + (event.clientX - startX);  // Here / 2 due to auto center positioning
                 const newHeight = startHeight + (event.clientY - startY); // Высота изменяется относительно начальной позиции
-
-                //if (newWidth > 160) component.style.width = `${newWidth}px`; // Установка минимальной ширины
-                if (newWidth > 160) component.style.width = `${newWidth * 2}px`;   // no horizontal central positioning: `${newWidth }px`;    //`${newWidth * 2 }px`;           // Here * 2 due to auto center positioning 
-                if (newHeight > 100) component.style.height = `${newHeight}px`; // Установка минимальной высоты
+            
+                //if (newWidth > this.minimumWidth) component.style.width = `${newWidth}px`; // Установка минимальной ширины
+                if (newWidth > this.minimumWidth) component.style.width = `${newWidth * 2}px`;   // no horizontal central positioning: `${newWidth }px`;    //`${newWidth * 2 }px`;           // Here * 2 due to auto center positioning 
+                if (newHeight > this.minimumHeihgt) component.style.height = `${newHeight}px`; // Установка минимальной высоты
             };
 
             const stopResize = () => {
