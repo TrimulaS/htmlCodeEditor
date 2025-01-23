@@ -2,137 +2,162 @@
 
 const styleCodeEditor = document.createElement('style');
 styleCodeEditor.textContent = `
-    .main-div-ce {
-        position: relative;
-        border: solid 1px black;
-        display: flex;
-        flex-direction: row;
-        min-width: 0;
-        min-height: 0;
-    }
+    
 
-    .area-ce {
-        display: flex;
-        flex-grow: 1;
-        flex-direction: column;
-        min-width: 0;
-        min-height: 0;
-    }
+        .main-div-ce{
+            position: relative;
+            border: solid 1px black;
+            flex-direction : 'row';
+            min-width: 0; /* Предотвращает переполнение по ширине */
+            min-height: 0; /* Предотвращает переполнение по высоте */
+        }
 
-    .splitter-ce {
-        box-sizing: border-box;
-        overflow: auto;
-        flex-grow: 0;
-        flex-shrink: 0;
-        transition: background-color 0.3s ease;
-        background-color: #eee;
-        border-left: 2px solid #fff;
-        border-top: 2px solid #fff;
-        border-right: 2px solid #ddd;
-        border-bottom: 2px solid #ddd;
-    }
+        .area-ce{
+            display: flex;
+            flex-grow:1;
+            flex-direction: column; /* Расположим toolbar сверху, а editor ниже */
+            min-width: 0; /* Предотвращает переполнение по ширине */
+            min-height: 0; /* Предотвращает переполнение по высоте */
+        }
+        .splitter-ce{
+            /* background-color : #f0f0f0; */
 
-    .splitter-ce:hover {
-        background-color: #ddd;
-    }
+            box-sizing: border-box;
 
-    .toolbar-ce {
-        background-color: #f0f0f0;
-        display: flex;
-        flex-grow: 0;
-        flex-shrink: 0;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
+            overflow: auto;
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
 
-    .button-ce {
-        flex-grow: 0;
-        flex-shrink: 1;
-        display: inline;
-        transition: background-color 0.3s ease;
-        background-color: #eee;
-        border-left: 2px solid #fff;
-        border-top: 2px solid #fff;
-        border-right: 2px solid #ddd;
-        border-bottom: 2px solid #ddd;
-    }
 
-    .button-ce:hover {
-        background-color: #ddd;
-    }
 
-    .container-ce {
-        width: 100%;
-        height: 100%;
-        flex-grow: 0;
-        flex-shrink: 1;
-        overflow: auto;
-        background-color: beige;
-    }
+        .toolbar-ce{
+            background-color : #f0f0f0;
+            display: flex;
+            flex-grow: 0;
+            flex-shrink: 0; /* toolbar занимает фиксированную высоту */
+            /* dfisplay: flex; */
+            flex-direction: row; /* Расположим toolbar сверху, а editor ниже */
+            flex-wrap: wrap;
+        }
+        .button-ce{
+            flex-grow: 0;
+            flex-shrink: 1;
+            display: inline;
 
-    .code-editor-container-ce {
-        font-family: monospace;
-    }
+        }
 
-    .code-input-ce {
-        outline: none;
-        border: none;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        word-break: break-all;
-        box-sizing: border-box;
-        padding: 5px;
-    }
+        .container-ce {
+            /* position: relative; */
+            width: 100%; /* Занимает всю ширину родителя */
+            height: 100%; /* Занимает всю высоту родителя */
+            flex-grow: 0;
+            flex-shrink: 1; /* toolbar занимает фиксированную высоту */
+            overflow: auto;            
+            background-color: beige;
+        }
+        .code-editor-container-ce{
+            
+            /* background-color: beige; */
+            font-family: monospace;
+        }
+        .code-input-ce{
 
-    .code-viewer-container-ce {
-        overflow: auto;
-    }
+            /* Убираем рамки и outline */
+            outline: none;
+            border: none;
 
-    .code-viewer-ce {
-        padding: 5px;
-    }
+            
 
-    .corner-ce {
-        width: 10px;
-        height: 10px;
-        border-style: solid;
-        position: absolute;
-        transition: background-color 0.3s ease;
-        background-color: #eee;
-        border-left: 2px solid #fff;
-        border-top: 2px solid #fff;
-        border-right: 2px solid #ddd;
-        border-bottom: 2px solid #ddd;
-    }
+            white-space: pre-wrap; /* Сохраняем пробелы и перенос строк */
+            word-wrap: break-word; /* Перенос длинных слов */
+            word-break: break-all; /* Перенос длинных строк на новую строку */
+            box-sizing: border-box; /* Включаем отступы и границы в размеры */
 
-    .corner-ce:hover {
-        background-color: #ddd;
-    }
+           
+ 
+        }
 
-    .bottom-right-ce {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        cursor: se-resize;
-    }
+
+        .code-viewer-container-ce{
+            overflow: auto; /* Автоматическая прокрутка при переполнении */
+            /* background-color: rgb(200, 130, 37); */
+        }
+        /* .code-viewer-ce{
+            background-color: rgb(50, 198, 112);
+        } */
+
+
+
+        /* Code input and output*/
+        .code-input-ce , .code-viewer-ce{
+            padding : 5px;
+        }
+
+
+
+
+        /* Resize button */
+        .corner-ce {
+            width: 10px;
+            height: 10px;
+            /* background-color: black; */
+            border-style: solid ;
+            position: absolute;
+        }
+        .bottom-right-ce {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            cursor: se-resize;
+        }
+
+
+        /* Decoration */
+
+        .splitter-ce , .corner-ce, .button-ce {
+            transition: background-color 0.3s ease;
+        }
+
+        .splitter-ce:hover , .corner-ce:hover, .button-ce:hover  {
+            background-color: #ddd;
+        }
+
+
+        .embossed1, .toolbar-ce, .splitter-ce {
+            background-color:        #eee;
+            border-left:   1px solid #fff;
+            border-top:    1px solid #fff;
+            border-right:  1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+        .embossed2, .button-ce, .corner-ce{
+            background-color:        #eee;
+            border-left:   2px solid #fff;
+            border-top:    2px solid #fff;
+            border-right:  2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+        } 
+
+
 `;
 document.head.appendChild(styleCodeEditor);
 
-class CodeEditor {
 
-    constructor(parent, htmlCode, splitterRatio = 0.5) {
+class CodeEditor {
+    constructor(parent, htmlCode) {
         this.parent = parent;
         this.htmlCode = htmlCode;
         this.isDragging = false;
         this.splitter = null;
         this.minimumSize = 20;
         this.splitterSize = 8;
-        this.splitterRatio = splitterRatio; // Новый параметр для задания положения сплиттера
-    
+
+        
+
         this.init();
     }
-    
-    
+
     init() {
         this.parent.style.display = 'flex';
         this.parent.style.flexDirection = 'row';
@@ -211,56 +236,35 @@ class CodeEditor {
         });
     }
 
-
     insertSplitter(parent, areaLeft, areaRight) {
         parent.innerHTML = '';
         parent.style.display = 'flex';
-    
-        // Установка начальных размеров областей в зависимости от splitterRatio
-        const leftFlexPercent = this.splitterRatio * 100;
-        const rightFlexPercent = (1 - this.splitterRatio) * 100;
-    
-        areaLeft.style.flex = `0 0 calc(${leftFlexPercent}% - ${this.splitterSize / 2}px)`;
-        areaRight.style.flex = `0 0 calc(${rightFlexPercent}% - ${this.splitterSize / 2}px)`;
-    
+
+        areaLeft.style.flex = `0 0 calc(50% - ${this.splitterSize / 2}px)`;
+        areaRight.style.flex = `0 0 calc(50% - ${this.splitterSize / 2}px)`;
+
         const splitter = document.createElement('div');
         splitter.classList.add('splitter-ce');
         splitter.style.flexGrow = 0;
         splitter.style.flexShrink = 0;
-    
+
         parent.append(areaLeft, splitter, areaRight);
         this.setSplitterDirection(splitter);
         this.makeResizableDiv(splitter);
-    
+
         return splitter;
     }
-
-    setSplitterPosition(ratio) {
-        if (ratio <= 0 || ratio >= 1) {
-            console.warn('Splitter ratio must be between 0 and 1.');
-            return;
-        }
-    
-        this.splitterRatio = ratio; // Обновляем значение отношения
-        const leftFlexPercent = ratio * 100;
-        const rightFlexPercent = (1 - ratio) * 100;
-    
-        // Применяем новые размеры областей
-        this.areaLeft.style.flex = `0 0 calc(${leftFlexPercent}% - ${this.splitterSize / 2}px)`;
-        this.areaRight.style.flex = `0 0 calc(${rightFlexPercent}% - ${this.splitterSize / 2}px)`;
-    }
-    
-    
-
 
     setSplitterDirection(splitter) {
         if (!splitter) return;
         const parent = splitter.parentElement;
         if (parent.style.flexDirection === 'row') {
+            splitter.className = 'splitter horizontal-splitter';
             splitter.style.width = `${this.splitterSize}px`;
             splitter.style.height = '100%';
             splitter.style.cursor = 'ew-resize';
         } else if (parent.style.flexDirection === 'column') {
+            splitter.className = 'splitter vertical-splitter';
             splitter.style.width = '100%';
             splitter.style.height = `${this.splitterSize}px`;
             splitter.style.cursor = 'ns-resize';
@@ -312,9 +316,6 @@ class CodeEditor {
         });
     }
 
-
-
-
     divResizeHV(component) {
         const bottomRight = document.createElement('div');
         bottomRight.classList.add('corner-ce', 'bottom-right-ce');
@@ -327,17 +328,15 @@ class CodeEditor {
             const startY = e.clientY;
 
             const onMouseMove = (event) => {
-                //const newWidth = startWidth + (event.clientX - startX); // Ширина изменяется относительно начальной позиции
                 const newWidth = startWidth/2 + (event.clientX - startX);          // no horizontal central positioning:  ( startWidth +event.clientX - startX );  //startWidth/2 + (event.clientX - startX);  // Here / 2 due to auto center positioning
-                const newHeight = startHeight + (event.clientY - startY); // Высота изменяется относительно начальной позиции
+                const newHeight = startHeight + (event.clientY - startY);
 
-                //if (newWidth > 160) component.style.width = `${newWidth}px`; // Установка минимальной ширины
                 if (newWidth > 160) component.style.width = `${newWidth * 2}px`;   // no horizontal central positioning: `${newWidth }px`;    //`${newWidth * 2 }px`;           // Here * 2 due to auto center positioning 
-                if (newHeight > 100) component.style.height = `${newHeight}px`; // Установка минимальной высоты
+                if (newHeight > 100) component.style.height = `${newHeight}px`;
             };
 
             const stopResize = () => {
-                document.removeEventListener('mousemove', onMouseMove); // Удаление слушателей после завершения ресайза
+                document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', stopResize);
             };
 
@@ -347,7 +346,3 @@ class CodeEditor {
     }
 }
 
-// // Пример использования класса CodeEditor
-// const container = document.getElementById('code-editor-container');
-// const initialCode = `<h1>Welcome to the Code Editor!</h1>\n<p>Edit this code and run it to see the output.</p>`;
-// new CodeEditor(container, initialCode);

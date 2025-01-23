@@ -119,20 +119,16 @@ styleCodeEditor.textContent = `
 document.head.appendChild(styleCodeEditor);
 
 class CodeEditor {
-
-    constructor(parent, htmlCode, splitterRatio = 0.5) {
+    constructor(parent, htmlCode) {
         this.parent = parent;
         this.htmlCode = htmlCode;
         this.isDragging = false;
         this.splitter = null;
         this.minimumSize = 20;
         this.splitterSize = 8;
-        this.splitterRatio = splitterRatio; // Новый параметр для задания положения сплиттера
-    
         this.init();
     }
-    
-    
+
     init() {
         this.parent.style.display = 'flex';
         this.parent.style.flexDirection = 'row';
@@ -211,47 +207,24 @@ class CodeEditor {
         });
     }
 
-
     insertSplitter(parent, areaLeft, areaRight) {
         parent.innerHTML = '';
         parent.style.display = 'flex';
-    
-        // Установка начальных размеров областей в зависимости от splitterRatio
-        const leftFlexPercent = this.splitterRatio * 100;
-        const rightFlexPercent = (1 - this.splitterRatio) * 100;
-    
-        areaLeft.style.flex = `0 0 calc(${leftFlexPercent}% - ${this.splitterSize / 2}px)`;
-        areaRight.style.flex = `0 0 calc(${rightFlexPercent}% - ${this.splitterSize / 2}px)`;
-    
+
+        areaLeft.style.flex = `0 0 calc(50% - ${this.splitterSize / 2}px)`;
+        areaRight.style.flex = `0 0 calc(50% - ${this.splitterSize / 2}px)`;
+
         const splitter = document.createElement('div');
         splitter.classList.add('splitter-ce');
         splitter.style.flexGrow = 0;
         splitter.style.flexShrink = 0;
-    
+
         parent.append(areaLeft, splitter, areaRight);
         this.setSplitterDirection(splitter);
         this.makeResizableDiv(splitter);
-    
+
         return splitter;
     }
-
-    setSplitterPosition(ratio) {
-        if (ratio <= 0 || ratio >= 1) {
-            console.warn('Splitter ratio must be between 0 and 1.');
-            return;
-        }
-    
-        this.splitterRatio = ratio; // Обновляем значение отношения
-        const leftFlexPercent = ratio * 100;
-        const rightFlexPercent = (1 - ratio) * 100;
-    
-        // Применяем новые размеры областей
-        this.areaLeft.style.flex = `0 0 calc(${leftFlexPercent}% - ${this.splitterSize / 2}px)`;
-        this.areaRight.style.flex = `0 0 calc(${rightFlexPercent}% - ${this.splitterSize / 2}px)`;
-    }
-    
-    
-
 
     setSplitterDirection(splitter) {
         if (!splitter) return;
@@ -327,12 +300,10 @@ class CodeEditor {
             const startY = e.clientY;
 
             const onMouseMove = (event) => {
-                //const newWidth = startWidth + (event.clientX - startX); // Ширина изменяется относительно начальной позиции
-                const newWidth = startWidth/2 + (event.clientX - startX);          // no horizontal central positioning:  ( startWidth +event.clientX - startX );  //startWidth/2 + (event.clientX - startX);  // Here / 2 due to auto center positioning
+                const newWidth = startWidth + (event.clientX - startX); // Ширина изменяется относительно начальной позиции
                 const newHeight = startHeight + (event.clientY - startY); // Высота изменяется относительно начальной позиции
 
-                //if (newWidth > 160) component.style.width = `${newWidth}px`; // Установка минимальной ширины
-                if (newWidth > 160) component.style.width = `${newWidth * 2}px`;   // no horizontal central positioning: `${newWidth }px`;    //`${newWidth * 2 }px`;           // Here * 2 due to auto center positioning 
+                if (newWidth > 160) component.style.width = `${newWidth}px`; // Установка минимальной ширины
                 if (newHeight > 100) component.style.height = `${newHeight}px`; // Установка минимальной высоты
             };
 
