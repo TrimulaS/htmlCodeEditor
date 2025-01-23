@@ -119,11 +119,13 @@
   
     </style>
     <!-- <script src="./flex2_files/codeEditor.js"></script> -->
-    <script  src="./flex2_files/codeEditor.js"></script>
+    <script  src="./codeEditor_files/codeEditor.js"></script>
 </head>
 <body>
     <div style="display: flex; flex-direction: column;   justify-content: center;    align-items: center;">
         <div id="codeEditor1" class = "codeEditor" style=" width: 400px; height: 300px;"></div>
+        <h2>Second Editor</h2>
+        <div id="codeEditor2" class = "codeEditor" style=" width: 50%; height: 100px;"></div>
 
     </div>
     <script>
@@ -168,53 +170,53 @@
         <div class="no-style" style="align-self: stretch;">align-self: stretch;</div>
         <div class="no-style" style="align-self: end;">align-self: end;</div>
 
-    </div>
-    sss<br>
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
+        </div>
+                sss<br>
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
 
-sss<br>sss<br>
-        
-        
-sss<br>
-sss<br>
-sss<br>sss<br>
-        
-        
-sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
+            sss<br>
+            sss<br>sss<br>
+                    
+                    
+            sss<br>
         
         `;
 
@@ -222,10 +224,18 @@ sss<br>
         
         
         
-        document.addEventListener('DOMContentLoaded', () => {
+            //Usage
+            document.addEventListener('DOMContentLoaded', () => {
+                const htmlCode = "<b>bold</b> not bold";
+                const htmlCode2 = "<h3>H3 Header</h3> regular text";
+                new CodeEditor(document.getElementById("codeEditor1"), htmlCode);
+                new CodeEditor(document.getElementById("codeEditor2"), htmlCode2);
+            });
 
-            insertCodeEditor(document.getElementById("codeEditor1"), htmlCode);     //"<b>bold</b> not bold"
-        });
+
+
+            // insertCodeEditor(document.getElementById("codeEditor1"), htmlCode);     //"<b>bold</b> not bold"
+
        
       </script>
 

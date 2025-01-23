@@ -1,327 +1,199 @@
-// codeEditor.js
-//document.addEventListener('DOMContentLoaded', () => {
-const splitterSize = 10;    //10 pixels width or height of splitters
-const minimum_size = 20;                    //Minimal size to stop resize
-let isDragging = false;
-let splitter = null;
-// let direction = 'horizontal';
+class CodeEditor {
+    constructor(parent, htmlCode) {
+        this.parent = parent;
+        this.htmlCode = htmlCode;
+        this.isDragging = false;
+        this.splitter = null;
+        this.minimumSize = 20;
+        this.splitterSize = 10;
 
-
-
-
-function insertCodeEditor(parent, htmlCode) {
-
-    parent.style.display = 'flex';
-    parent.style.flexDirection = 'row';
-    
-    // AreaLeft
-    const areaLeft = document.createElement('div');
-    areaLeft.id = areaLeft;
-	areaLeft.classList = 'area'
-
-    const areaRight = document.createElement('div');
-    areaRight.id = 'areaRight';
-	areaRight.classList = 'area'
-    const toolbar = document.createElement('div');
-    toolbar.classList = 'area toolbar'
-	
-
-    //---------------------RadioButtons to switch horizonta / verlical
-    toolbar.innerHTML = `
-        <button id="button-run-code" class="button">Run</button>
-        <button id="button-clear-code" class="button">Clear</button>
-        <label>
-            <input type="radio" name="layout" value="horizontal" checked> Horizontal
-        </label>
-        <label>
-            <input type="radio" name="layout" value="vertical"> Vertical
-        </label>
-    `;
-
-
-
-    const codeEditorContainer = document.createElement('div');
-    codeEditorContainer.classList = 'container code-editor-container';
-
-    const codeEditor = document.createElement('div');
-	codeEditor.classList = 'code-editor'
-    codeEditor.contentEditable = "true"; // Правильное использование свойства
-    codeEditor.textContent = htmlCode;
-
-    codeEditorContainer.appendChild(codeEditor);
-	areaLeft.append(toolbar, codeEditorContainer);
-
-
-
-
-    // Area Right
-    const codeViewerContainer = document.createElement('div');
-    codeViewerContainer.classList = 'container code-viewer-container';
-
-	const codeViewer = document.createElement('div');
-	codeViewer.classList = 'code-viewer'
-
-
-    codeViewer.innerHTML = htmlCode;
-	codeViewerContainer.appendChild(codeViewer);
-
-    areaRight.append(codeViewerContainer);
-
-    splitter = insertSplitter(parent, areaLeft, areaRight);    
-    divResizeHV(parent)
-
-    
-    // After DOM updated, assign listeners:
-
-    //RadioButtons to switch horizonta / verlical
-    // Находим радиокнопки
-    const radioButtons = document.querySelectorAll('input[name="layout"]');
-
-    // Функция для изменения расположения
-    function reassign(layout) {
-        console.log(`Layout changed to: ${layout}`);
-        // Здесь будет ваша логика изменения, например:
-        parent.style.flexDirection = layout === 'horizontal' ? 'row' : 'column';
-        setSplitterDirection(splitter);
+        this.init();
     }
 
-    // Добавляем обработчики событий для каждого радиобатона
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', (event) => {
-            if (event.target.checked) {
-                reassign(event.target.value);
-            }
+    init() {
+        this.parent.style.display = 'flex';
+        this.parent.style.flexDirection = 'row';
+
+        // Создание левой области
+        this.areaLeft = document.createElement('div');
+        this.areaLeft.classList = 'area';
+
+        const toolbar = document.createElement('div');
+        toolbar.classList = 'area toolbar';
+        toolbar.innerHTML = `
+            <button id="button-run-code" class="button">Run</button>
+            <button id="button-clear-code" class="button">Clear</button>
+            <label>
+                <input type="radio" name="layout-${this.parent.id}" value="horizontal" checked> Horizontal
+            </label>
+            <label>
+                <input type="radio" name="layout-${this.parent.id}" value="vertical"> Vertical
+            </label>
+        `;
+
+        const codeEditorContainer = document.createElement('div');
+        codeEditorContainer.classList = 'container code-editor-container';
+
+        this.codeEditor = document.createElement('div');
+        this.codeEditor.classList = 'code-editor';
+        this.codeEditor.contentEditable = "true";
+        this.codeEditor.textContent = this.htmlCode;
+
+        codeEditorContainer.appendChild(this.codeEditor);
+        this.areaLeft.append(toolbar, codeEditorContainer);
+
+        // Создание правой области
+        this.areaRight = document.createElement('div');
+        this.areaRight.classList = 'area';
+
+        const codeViewerContainer = document.createElement('div');
+        codeViewerContainer.classList = 'container code-viewer-container';
+
+        this.codeViewer = document.createElement('div');
+        this.codeViewer.classList = 'code-viewer';
+        this.codeViewer.innerHTML = this.htmlCode;
+
+        codeViewerContainer.appendChild(this.codeViewer);
+        this.areaRight.append(codeViewerContainer);
+
+        // Создание разделителя
+        this.splitter = this.insertSplitter(this.parent, this.areaLeft, this.areaRight);
+
+        // Добавление resize-контроля
+        this.divResizeHV(this.parent);
+
+        // Обработчики событий
+        this.initListeners(toolbar);
+    }
+
+    initListeners(toolbar) {
+        // Смена ориентации
+        const radioButtons = toolbar.querySelectorAll(`input[name="layout-${this.parent.id}"]`);
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                if (event.target.checked) {
+                    this.parent.style.flexDirection = event.target.value === 'horizontal' ? 'row' : 'column';
+                    this.setSplitterDirection(this.splitter);
+                }
+            });
         });
-    });
 
-    document.getElementById('button-run-code').addEventListener('click', function() {
-        codeViewer.innerHTML = codeEditor.textContent
-    });
-    document.getElementById('button-clear-code').addEventListener('click', function() {
-        codeEditor.textContent="";
-    });
-
-    // //Arrange when resize to adjust containers
-    // const resizeObserver = new ResizeObserver(() => {
-    //     onResize();
-    // });
-    
-    // resizeObserver.observe(parent);
-    
-    // function onResize(){
-
-
-    //     // Рассчитываем ширину и высоту элементов через getBoundingClientRect()
-    //     const areaLeftRect = areaLeft.getBoundingClientRect();
-    //     const toolbarRect = toolbar.getBoundingClientRect();
-    //     const areaRightRect = areaRight.getBoundingClientRect();
-    //     if(parent.style.flexDirection === 'row'){
-            
-    //         // Устанавливаем flex-параметры для left и right
-    //         const widthMidle = 50% - splitterSize / 2 + 'px';
-    //         areaLeft.style.flex = `0 0 ${widthMidle}`;
-            
-    //         areaRight.style.flex = `0 0 ${widthMidle}`;
-        
-    //         // Рассчитываем размеры для контейнеров
-    //         const codeEditorContainerHeight = areaLeftRect.height - toolbarRect.height;
-    //         const codeEditorContainerWidth = areaLeftRect.width;
-        
-    //         const codeViewerContainerHeight = areaRightRect.height;
-    //         const codeViewerContainerWidth = areaRightRect.width;
-        
-    //         // Устанавливаем размеры
-    //         codeEditorContainer.style.height = `${codeEditorContainerHeight}px`;
-    //         codeEditorContainer.style.width = `${codeEditorContainerWidth}px`;
-        
-    //         codeViewerContainer.style.height = `${codeViewerContainerHeight}px`;
-    //         codeViewerContainer.style.width = `${codeViewerContainerWidth}px`;
-    //     }
-    //     else if(parent.style.flexDirection === 'column'){
-
-    //     }
-    
-
-
-    // }
-    
-}
-
-
-
-
-
-//-------------------------------------------------------------------------------- Splitter
-function insertSplitter(parent, areaLeft, areaRight){
-    
- const rect = parent.getBoundingClientRect();
-    
-    // Очищаем родительский div
-    parent.innerHTML = '';
-    parent.style.display = 'flex';
-
-    //const area1 = document.createElement('div');
-    areaLeft.classList.add('area');
-    // areaLeft.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
-    areaLeft.style.flex = `0 0 calc(50% - ${splitterSize/2}px)`;
-    
-    //const area2 = document.createElement('div');
-    areaRight.classList.add('area');
-    // areaRight.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
-    areaRight.style.flex = `0 0 calc(50% - ${splitterSize/2}px)`;
-
-    const splitter = document.createElement('div');
-    splitter.classList.add('splitter');
-	splitter.style.flexGrow = 0;
-	splitter.style.flexShrink = 0;
-    // splitter.style.backgroundColor = 'rgba(' + (255 * Math.random()) + ',' +  (255 * Math.random()) + ',' +  (255 * Math.random()) + ', 0.5)'; 
-
-    
-
-    parent.append(areaLeft, splitter, areaRight);
-	    setSplitterDirection(splitter);
-    makeResizableDiv(splitter);
-
-
-	return splitter;
-}
-
-function setSplitterDirection(splitter){
-	if(!splitter)return;
-    const parent = splitter.parentElement;
-    if (parent.style.flexDirection === 'row') {
-        //parent.style.flexDirection = 'row'
-        splitter.classList = 'splitter' + ' ' + 'horizontal-splitter'
-        splitter.style.width = splitterSize + 'px';
-        splitter.style.height = '100%';
-        splitter.style.cursor = 'ew-resize'
-        
-    } else if (parent.style.flexDirection === 'column') {
-
-        //parent.style.flexDirection = 'column'
-        splitter.classList = 'splitter' + ' ' + 'vertical-splitter'
-        splitter.style.width = '100%'; 
-        splitter.style.height = splitterSize + 'px';
-        splitter.style.cursor = 'ns-resize'
-
+        // Обработчики кнопок
+        toolbar.querySelector('#button-run-code').addEventListener('click', () => {
+            this.codeViewer.innerHTML = this.codeEditor.textContent;
+        });
+        toolbar.querySelector('#button-clear-code').addEventListener('click', () => {
+            this.codeEditor.textContent = "";
+        });
     }
-    else{
-        console.log(`(!) Wrong direction type: ${parent.style.flexDirection}`);
+
+    insertSplitter(parent, areaLeft, areaRight) {
+        parent.innerHTML = '';
+        parent.style.display = 'flex';
+
+        areaLeft.style.flex = `0 0 calc(50% - ${this.splitterSize / 2}px)`;
+        areaRight.style.flex = `0 0 calc(50% - ${this.splitterSize / 2}px)`;
+
+        const splitter = document.createElement('div');
+        splitter.classList.add('splitter');
+        splitter.style.flexGrow = 0;
+        splitter.style.flexShrink = 0;
+
+        parent.append(areaLeft, splitter, areaRight);
+        this.setSplitterDirection(splitter);
+        this.makeResizableDiv(splitter);
+
+        return splitter;
     }
- }
 
+    setSplitterDirection(splitter) {
+        if (!splitter) return;
+        const parent = splitter.parentElement;
+        if (parent.style.flexDirection === 'row') {
+            splitter.className = 'splitter horizontal-splitter';
+            splitter.style.width = `${this.splitterSize}px`;
+            splitter.style.height = '100%';
+            splitter.style.cursor = 'ew-resize';
+        } else if (parent.style.flexDirection === 'column') {
+            splitter.className = 'splitter vertical-splitter';
+            splitter.style.width = '100%';
+            splitter.style.height = `${this.splitterSize}px`;
+            splitter.style.cursor = 'ns-resize';
+        }
+    }
 
-
-function makeResizableDiv(splitter) {
-    const element = splitter.previousElementSibling; //document.querySelector(div);
-    const element2 = splitter.nextElementSibling;
-
-    const parent = splitter.parentElement;
-
-
-
-    splitter.addEventListener('mousedown', function(e) {
-    e.preventDefault()
-    isDragging = true;
-
-    // original_mouse_x = e.pageX;
-    // original_mouse_y = e.pageY;
-    window.addEventListener('mousemove', onDrag)
-    window.addEventListener('mouseup', stopDrag)
-    })
-    
-
-    //'horizontal-splitter' : 'vertical-splitter');
-    function onDrag(e) {
-        if (!isDragging) return;
-        const parentRect = splitter.parentNode.getBoundingClientRect();
+    makeResizableDiv(splitter) {
         const areaPrevious = splitter.previousElementSibling;
         const areaNext = splitter.nextElementSibling;
 
-        if (parent.style.flexDirection === 'row') {   
-            const newLeft = e.clientX - parentRect.left;
-            const parentWidth = parentRect.width;
+        splitter.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            this.isDragging = true;
 
-            // If new postion is not exceed minimal area size requiremnt
-            if(newLeft > minimum_size && newLeft < parentWidth - minimum_size){
-                // areaNext.style.flexGrow = 1;
-                areaNext.style.flex = `1 1 auto`;
-                // console.log(`id: ${areaNext.id}   areaNext.flexGrow  ${areaNext.flexGrow }`)
-                // Устанавливаем ширину первого блока
-                const leftFlex = (newLeft / parentWidth) * 100;
-                areaPrevious.style.flex = `0 0 ${leftFlex}%`;
-               
-            }
+            const onDrag = (e) => {
+                if (!this.isDragging) return;
 
-    
-        }
-        else if (parent.style.flexDirection === 'column') {
-            const newTop = e.clientY - parentRect.top;
-            const parentHeight = parentRect.height;
+                const parentRect = splitter.parentNode.getBoundingClientRect();
 
-            // If new postion is not exceed minimal area size requiremnt
-            if(newTop > minimum_size && newTop < parentHeight - minimum_size){
-                areaNext.style.flex = `1 1 auto`;
-                // Устанавливаем ширину первого блока
-                const topFlex = (newTop / parentHeight) * 100;
-                areaPrevious.style.flex = `0 0 ${topFlex}%`;
+                if (this.parent.style.flexDirection === 'row') {
+                    const newLeft = e.clientX - parentRect.left;
+                    const parentWidth = parentRect.width;
 
+                    if (newLeft > this.minimumSize && newLeft < parentWidth - this.minimumSize) {
+                        const leftFlex = (newLeft / parentWidth) * 100;
+                        areaPrevious.style.flex = `0 0 ${leftFlex}%`;
+                        areaNext.style.flex = `1 1 auto`;
+                    }
+                } else if (this.parent.style.flexDirection === 'column') {
+                    const newTop = e.clientY - parentRect.top;
+                    const parentHeight = parentRect.height;
 
-            }
-        }
-    
-    
+                    if (newTop > this.minimumSize && newTop < parentHeight - this.minimumSize) {
+                        const topFlex = (newTop / parentHeight) * 100;
+                        areaPrevious.style.flex = `0 0 ${topFlex}%`;
+                        areaNext.style.flex = `1 1 auto`;
+                    }
+                }
+            };
 
+            const stopDrag = () => {
+                this.isDragging = false;
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+            };
 
-    }
-    function stopDrag() {
-        isDragging = false;
-        // areaNext.style.flex = 'auto';
-        //splitter.style.left = areaPrevious.width
-        document.removeEventListener('mousemove', onDrag);
-        document.removeEventListener('mouseup', stopDrag);
-    }
-    
-}
-function fixFlexSize(component){
-
-}
-//---------------------------------------------------------------------Resizer for whole Container
-// Adds resize control to bootom right
-function divResizeHV(component){
-    // add resize control at bottom right
-    const bottomRight = document.createElement('div');
-    bottomRight.classList.add('corner', 'bottom-right');
-    component.appendChild(bottomRight);
-
-    bottomRight.addEventListener('mousedown', startResizing);
-
-    function startResizing(e) {
-        const component = e.target.parentElement;
-        let startWidth = component.offsetWidth;
-        let startHeight = component.offsetHeight;
-        let startX = e.clientX;
-        let startY = e.clientY;
-
-
-        function onMouseMove(event) {
-
-
-            let newWidth = startWidth/2 + (event.clientX - startX); // ( startWidth +event.clientX - startX );  //startWidth/2 + (event.clientX - startX);  // Here / 2 due to auto center positioning
-            let newHeight = startHeight + (event.clientY - startY);
-
-            if(newWidth >  160) component.style.width =`${newWidth * 2 }px`; //`${newWidth }px`;    //`${newWidth * 2 }px`;           // Here * 2 due to auto center positioning 
-            if(newHeight > 100) component.style.height = `${newHeight}px`;
-
-            
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-
-        document.addEventListener('mouseup', function mouseUpHandler() {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', mouseUpHandler);
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
         });
     }
 
+    divResizeHV(component) {
+        const bottomRight = document.createElement('div');
+        bottomRight.classList.add('corner', 'bottom-right');
+        component.appendChild(bottomRight);
+
+        bottomRight.addEventListener('mousedown', (e) => {
+            const startWidth = component.offsetWidth;
+            const startHeight = component.offsetHeight;
+            const startX = e.clientX;
+            const startY = e.clientY;
+
+            const onMouseMove = (event) => {
+                const newWidth = startWidth + (event.clientX - startX);
+                const newHeight = startHeight + (event.clientY - startY);
+
+                if (newWidth > 160) component.style.width = `${newWidth}px`;
+                if (newHeight > 100) component.style.height = `${newHeight}px`;
+            };
+
+            const stopResize = () => {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', stopResize);
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', stopResize);
+        });
+    }
 }
+
